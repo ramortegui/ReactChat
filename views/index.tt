@@ -1,3 +1,7 @@
 <div id="page">
-<p>Hello World</p>
+[% IF session.nick_name %]
+<p>With name</p>
+[% ELSE %]
+<p>no nickname</p>
+[% END %]
 </div>
