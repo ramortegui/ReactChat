@@ -48,6 +48,9 @@ sub _get_messages {
   if ( $rs->count - $offset <= 0 ){
     $offset = 0;
   }
+  else{
+    $offset = $rs->count - $offset;
+  }
   my $messages = $rs->search({},{
     order_by => 'id',
     offset => $offset 
