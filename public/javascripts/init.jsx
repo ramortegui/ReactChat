@@ -2,12 +2,91 @@ var Dashboard = React.createClass({
   render: function(){
     return (
       <div>
-        <Users interval={this.props.interval}/>
+        <Users interval={this.props.interval} />
+        <Chat interval={this.props.interval} />
       </div>
     )
   }
 
 });
+
+var Chat = React.createClass({
+  loadMessagesFromServer: function(){
+    $.ajax({
+      url: '/messages',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({messages: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(status, err.toString());
+      }.bind(this)
+    });
+  },
+  getInitialState: function(){
+    return { messages: [] }
+  },
+  componentDidMount: function() {
+    this.loadMessagesFromServer();
+    setInterval(this.loadMessagesFromServer, this.props.interval );
+  },
+  addMessage: function(newMessage){
+       $.ajax({
+      url: '/messages',
+      dataType: 'json',
+      type: 'POST',
+      data: { message: newMessage },
+      success: function(data) {
+        this.setState({messages: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error( status, err.toString());
+      }.bind(this)
+    });
+ 
+  },
+  render: function(){
+    var messages = this.state.messages.map(function(message){
+      return <tr><td>{message.nickname}</td><td>{message.message}</td></tr>
+    })
+    return (
+      <div>
+        <h1>Messages</h1> 
+        <p>Last 15 messages</p>
+        <table>
+        <tbody>
+        {messages}
+        </tbody>
+        </table>
+        <SendMessage newMessage={this.addMessage} />
+      </div>
+    )
+  }
+});
+
+var SendMessage = React.createClass({
+  getInitialState: function(){
+    return { message: '' }  
+  },
+  updateMessage: function(e){
+    this.setState({ message: e.target.value });
+  },
+  handleNewMessage: function(){
+    this.props.newMessage(this.state.message) 
+    this.setState({ message: '' });
+    
+  },
+  render: function(){
+    return (
+      <div>
+        <input type="text" value={this.state.message} onChange={this.updateMessage} />
+        <button onClick={this.handleNewMessage}>Send</button>
+      </div>
+    );
+  } 
+});
+
 
 var Users = React.createClass({
   loadUsersFromServer: function(){
@@ -19,7 +98,7 @@ var Users = React.createClass({
         this.setState({users: data});
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
+        console.error( status, err.toString());
       }.bind(this)
     });
   },
