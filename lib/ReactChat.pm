@@ -43,9 +43,14 @@ get '/leave' => sub {
 };
 
 sub _get_messages {
-  my $messages = schema->resultset('Message')->search({},{
+  my $rs = schema->resultset('Message');
+  my $offset = 15;
+  if ( $rs->count - $offset <= 0 ){
+    $offset = 0;
+  }
+  my $messages = $rs->search({},{
     order_by => 'id',
-    offset => (schema->resultset('Message')->count - 15)
+    offset => $offset 
   });
   my @list = ();
   while( my $message = $messages->next ){
