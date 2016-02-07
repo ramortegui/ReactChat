@@ -1,7 +1,22 @@
 <div id="page">
-[% IF session.nick_name %]
-<p>With name</p>
+  [% IF session.nickname %]
+  <div id="start">
+    <p>Hi [% session.nickname %] </p>
+    <div id="dashboard">
+      <div id="users">
+      </div>
+      <div id="chat">
+      </div>
+    </div>
+  <div>
+</div> 
 [% ELSE %]
-<p>no nickname</p>
-[% END %]
+<div id="chat">
+<form method="post">
+<label>Nick</label>
+<input type="text" name="nickname" value="" required/>
+<input type="submit" value="Start" />
+</form>
 </div>
+[% END %]
+<script type="text/babel" src="[% request.uri_base %]/javascripts/init.jsx"></script>
